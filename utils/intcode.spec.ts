@@ -25,4 +25,83 @@ describe('INTCODE', () => {
     run()
     expect(dump()).toBe("1002,4,3,4,99")
   })
+
+  it('should support 5-8', () => {
+    // Test 5
+    load("1105,10,5,3,1,3,0,99")
+    input(1)
+    run()
+    expect(dump()).toBe("1,10,5,3,1,3,0,99")
+    load("1105,0,5,3,1,99")
+    input(1)
+    run()
+    expect(dump()).toBe("1105,1,5,3,1,99")
+
+    // Test 6
+    load("1106,0,5,3,1,3,0,99")
+    input(1)
+    run()
+    expect(dump()).toBe("1,0,5,3,1,3,0,99")
+    load("1106,9,5,3,1,99")
+    input(1)
+    run()
+    expect(dump()).toBe("1106,1,5,3,1,99")
+
+    // Test 7
+    load("1107,6,6,0,99")
+    run()
+    expect(dump()).toBe("0,6,6,0,99")
+    load("1107,5,6,0,99")
+    run()
+    expect(dump()).toBe("1,5,6,0,99")
+
+    // Test 8
+    load("1108,6,6,0,99")
+    run()
+    expect(dump()).toBe("1,6,6,0,99")
+    load("1108,7,6,0,99")
+    run()
+    expect(dump()).toBe("0,7,6,0,99")
+
+    // Example from page 1 if 8 0 if not
+    load("3,9,8,9,10,9,4,9,99,-1,8")
+    input(8)
+    run()
+    expect(output()).toBe(1)
+    load("3,9,8,9,10,9,4,9,99,-1,8")
+    input(7)
+    run()
+    expect(output()).toBe(0)
+
+    //Example from page 1 if less than 8 0 if not
+    load("3,9,7,9,10,9,4,9,99,-1,8")
+    input(5)
+    run()
+    expect(output()).toBe(1)
+    load("3,9,7,9,10,9,4,9,99,-1,8")
+    input(8)
+    run()
+    expect(output()).toBe(0)
+    load("3,9,7,9,10,9,4,9,99,-1,8")
+    input(9)
+    run()
+    expect(output()).toBe(0)
+
+    // Example from page, 1001 if more than 8, 1000 if 8 and 999 if less than 8
+    load("3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99")
+    input(9)
+    run()
+    expect(output()).toBe(1001)
+
+    load("3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99")
+    input(8)
+    run()
+    expect(output()).toBe(1000)
+
+    load("3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99")
+    input(7)
+    expect(read(46)).toBe(99)
+    run()
+    expect(output()).toBe(999)
+  })
 })
