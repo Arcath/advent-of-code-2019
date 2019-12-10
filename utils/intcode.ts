@@ -101,12 +101,12 @@ const opCode = (ptr: number) => {
     break;
     case 5:
       noun = readMode(m1, ptr + 1)
-      nextPtr = noun === 0 ? ptr + 3 : read(ptr + 2)
+      nextPtr = noun === 0 ? ptr + 3 : readMode(m2, ptr + 2)
       instruction = getInstruction(parameter, 2, ptr)
     break;
     case 6:
       noun = readMode(m1, ptr + 1)
-      nextPtr = noun !== 0 ? ptr + 3 : read(ptr + 2)
+      nextPtr = noun !== 0 ? ptr + 3 : readMode(m2, ptr + 2)
       instruction = getInstruction(parameter, 2, ptr)
     break;
     case 7:
