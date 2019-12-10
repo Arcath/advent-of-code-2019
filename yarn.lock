@@ -709,6 +709,10 @@ cross-spawn@^6.0.0:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
+crypto-js@^3.1.9-1:
+  version "3.1.9-1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
+
 cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/cssom/-/cssom-0.3.8.tgz#9f1276f5b2b463f2114d3f2c75250af8c1a36f4a"
@@ -2624,6 +2628,12 @@ snapdragon@^0.8.1:
     source-map "^0.5.6"
     source-map-resolve "^0.5.0"
     use "^3.1.0"
+
+sodb@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/sodb/-/sodb-2.0.1.tgz#e2f321b0e8f341b0cb1ef32e43feceaf6873d5c0"
+  dependencies:
+    crypto-js "^3.1.9-1"
 
 source-map-resolve@^0.5.0:
   version "0.5.2"
