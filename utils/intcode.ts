@@ -1,7 +1,8 @@
 import leftPad from 'left-pad'
 
 let PROGRAM: number[]
-let programInput = 0
+let programInput: number[] = []
+let inputPtr = 0
 let programOutput = 0
 
 export const load = (input: string) => {
@@ -13,7 +14,7 @@ export const dump = () => {
 }
 
 export const input = (n: number) => {
-  programInput = n
+  programInput.push(n)
 }
 
 export const output = () => {
@@ -90,7 +91,8 @@ const opCode = (ptr: number) => {
     break;
     case 3:
       store = read(ptr + 1)
-      noun = programInput
+      noun = programInput[inputPtr]
+      inputPtr += 1
       nextPtr = ptr + 2
       instruction = getInstruction(parameter, 1, ptr)
     break;
@@ -127,7 +129,7 @@ const opCode = (ptr: number) => {
     break;
   }
 
-  console.log(`${ptr}: ${instruction}`)
+  //console.log(`${ptr}: ${instruction}`)
 
   return {code, noun, verb, store, nextPtr, instruction}
 }

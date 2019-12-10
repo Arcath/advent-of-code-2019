@@ -104,4 +104,12 @@ describe('INTCODE', () => {
     run()
     expect(output()).toBe(999)
   })
+
+  it('should support multiple inputs', () => {
+    load("3,11,3,12,1,11,12,13,4,13,99,0,0,0")
+    input(1)
+    input(2)
+    run()
+    expect(output()).toBe(3)
+  })
 })
