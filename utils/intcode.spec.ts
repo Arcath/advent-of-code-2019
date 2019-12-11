@@ -1,6 +1,33 @@
-import {load, run, dump, read, input, output} from './intcode'
+import {intcode, IDLE, WAIT_INPUT, WAIT_OUTPUT, HALTED} from './intcode'
 
-describe('INTCODE', () => {
+describe('INTCODE Computer', () => {
+  it('should be promise based', async () => {
+    const testInput = 10
+    const computer = await intcode("3,0,4,0,99")
+
+    expect(computer.state()).toBe(IDLE)
+
+    await computer.run()
+
+    expect(computer.state()).toBe(WAIT_INPUT)
+
+    computer.input(testInput)
+
+    await computer.run()
+
+    expect(computer.state()).toBe(WAIT_OUTPUT)
+
+    expect(computer.output()).toBe(testInput)
+
+    expect(computer.dump()).toBe(`${testInput},0,4,0,99`)
+
+    await computer.run()
+
+    expect(computer.state()).toBe(HALTED)
+  })
+})
+
+/*describe('INTCODE', () => {
   it('should run a simple program', () => {
     load('1,1,1,4,99,5,6,0,99')
     run()
@@ -112,4 +139,4 @@ describe('INTCODE', () => {
     run()
     expect(output()).toBe(3)
   })
-})
+})*/
