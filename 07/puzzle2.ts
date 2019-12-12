@@ -2,8 +2,8 @@ import {asyncMap} from '@arcath/utils'
 
 import {intcode, HALTED, IntCodeComputer, WAIT_OUTPUT} from '../utils/intcode'
 
+// 1714298
 const INPUT = "3,8,1001,8,10,8,105,1,0,0,21,34,43,60,81,94,175,256,337,418,99999,3,9,101,2,9,9,102,4,9,9,4,9,99,3,9,102,2,9,9,4,9,99,3,9,102,4,9,9,1001,9,4,9,102,3,9,9,4,9,99,3,9,102,4,9,9,1001,9,2,9,1002,9,3,9,101,4,9,9,4,9,99,3,9,1001,9,4,9,102,2,9,9,4,9,99,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,99,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,2,9,4,9,99,3,9,101,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,1002,9,2,9,4,9,99,3,9,1001,9,1,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,99"
-//const INPUT = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5"
 
 const permutations = (array: number[]) => {
   const p = (array: number [], temp: number []) => {
@@ -29,11 +29,11 @@ const main = async () => {
   //let permutation: number[] = []
   
   const results = await asyncMap(permutations([5, 6, 7, 8, 9]), async (order) => {
-    const A = await intcode(INPUT, [order[0]], 'A')
-    const B = await intcode(INPUT, [order[1]], 'B')
-    const C = await intcode(INPUT, [order[2]], 'C')
-    const D = await intcode(INPUT, [order[3]], 'D')
-    const E = await intcode(INPUT, [order[4]], 'E')
+    const A = await intcode({program: INPUT, initialInput: [order[0]], name: 'A'})
+    const B = await intcode({program: INPUT, initialInput: [order[1]], name: 'B'})
+    const C = await intcode({program: INPUT, initialInput: [order[2]], name: 'C'})
+    const D = await intcode({program: INPUT, initialInput: [order[3]], name: 'D'})
+    const E = await intcode({program: INPUT, initialInput: [order[4]], name: 'E'})
 
     const runComputer = async (computer: IntCodeComputer, input: number) => {
       computer.input(input)

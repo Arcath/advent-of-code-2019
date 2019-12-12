@@ -22,6 +22,7 @@ export interface IntCodeComputer{
   run: () => Promise<void>
   output: () => number
   input: (input: number) => void
+  runUntilHalt: () => Promise<{output: number[]}>
 }
 
 export interface IntCodeOptions{
@@ -282,6 +283,27 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
     log(ptr, `changing to state ${STATE}`)
   }
 
+  const runUntilHalt = async () => {
+    let out: number[] = []
+
+    await run()
+
+    switch(state()){
+      case WAIT_OUTPUT:
+        out.push(output())
+        out = out.concat((await runUntilHalt()).output)
+      break;
+      case WAIT_INPUT:
+        throw new Error(`runUnitlHalt must have all inputs supplied`)  
+      break;
+      case HALTED:
+      default:
+      break;
+    }
+
+    return {output: out}
+  }
+
   load(program)
 
   return {
@@ -292,6 +314,7 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
     run,
     output,
     write,
-    input
+    input,
+    runUntilHalt
   }
 }
