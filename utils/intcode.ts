@@ -24,18 +24,38 @@ export interface IntCodeComputer{
   input: (input: number) => void
 }
 
-export const intcode = async (program: string, initialInput?: number[], name: string = 'INT'): Promise<IntCodeComputer> => {
+export interface IntCodeOptions{
+  program: string
+  initialInput: number[]
+  name: string
+  debug: boolean
+}
+
+const defaultOptions: IntCodeOptions = {
+  program: '99',
+  initialInput: [],
+  name: 'INT',
+  debug: false
+}
+
+export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCodeComputer> => {
+  const {program, initialInput, name, debug} = Object.assign(defaultOptions, options)
+
   let PROGRAM: number[]
-  const INPUTS: number[] = initialInput ? initialInput : []
+  const INPUTS: number[] = initialInput
   let STATE: IntCodeState = IDLE
-  const paramRegex = /^([0-1])([0-1])([0-1])([0-9][0-9])$/
+  const paramRegex = /^([0-2])([0-2])([0-2])([0-9][0-9])$/
   let out: number = 0
+  let base: number = 0
+
+  const sleep = async (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 
   const log = (ptr: number, instruction: string) => {
     process.stdout.clearLine(0)
     process.stdout.cursorTo(0)
     process.stdout.write(`${name}#${ptr}: ${instruction}`)
-
   }
 
   const load = (input: string) => {
@@ -56,7 +76,24 @@ export const intcode = async (program: string, initialInput?: number[], name: st
   }
   
   const readMode = (mode: number, ptr: number) => {
-    return mode === 0 ? readFrom(ptr) : read(ptr)
+    switch(mode){
+      case 2:
+        return read(base + read(ptr))
+      case 1:
+        return read(ptr)
+      case 0:
+        return readFrom(ptr)
+    }
+  }
+
+  const storeMode = (mode: number, ptr: number) => {
+    switch (mode){
+      case 2:
+        return base + read(ptr)
+      case 1:
+      case 0:
+        return read(ptr)
+    }
   }
 
   const write = (position: number, value: number) => {
@@ -115,7 +152,7 @@ export const intcode = async (program: string, initialInput?: number[], name: st
       break;
       case 1:
       case 2:
-        store = m3 === 0 ? read(ptr + 3) : read(ptr + 3)
+        store = storeMode(m3, ptr + 3)
         noun = readMode(m1, ptr + 1)
         verb = readMode(m2, ptr + 2)
         nextPtr = ptr + 4
@@ -129,7 +166,7 @@ export const intcode = async (program: string, initialInput?: number[], name: st
           return {pause: true}
         }
 
-        store = read(ptr + 1)
+        store = storeMode(m1, ptr + 1)
         noun = input
         nextPtr = ptr + 2
         instruction = getInstruction(parameter, 1, ptr)
@@ -150,7 +187,7 @@ export const intcode = async (program: string, initialInput?: number[], name: st
         instruction = getInstruction(parameter, 2, ptr)
       break;
       case 7:
-        store = m3 === 0 ? read(ptr + 3) : read(ptr + 3)
+        store = storeMode(m3, ptr + 3)
         t1 = readMode(m1, ptr + 1)
         t2 = readMode(m2, ptr + 2)
         noun = t1 < t2 ? 1 : 0
@@ -158,16 +195,25 @@ export const intcode = async (program: string, initialInput?: number[], name: st
         instruction = getInstruction(parameter, 3, ptr)
       break;
       case 8:
-        store = m3 === 0 ? read(ptr + 3) : read(ptr + 3)
+        store = storeMode(m3, ptr + 3)
         t1 = readMode(m1, ptr + 1)
         t2 = readMode(m2, ptr + 2)
         noun = t1 === t2 ? 1 : 0
         nextPtr = ptr + 4
         instruction = getInstruction(parameter, 3, ptr)
       break;
+      case 9:
+        base = base + readMode(m1, ptr + 1)
+        nextPtr = ptr + 2
+        instruction = getInstruction(parameter, 1, ptr)
+      break;
     }
   
-   log(ptr, instruction)
+    log(ptr, instruction)
+
+    if(debug){
+      await sleep(300)
+    }
   
     return {code, noun, verb, store, nextPtr, instruction, pause}
   }
@@ -219,10 +265,12 @@ export const intcode = async (program: string, initialInput?: number[], name: st
         break;
         case 5:
         case 6:
+        case 9:
           // NO-OP
         break;
         case 99:
           STATE = HALTED
+          console.log('') // to drop to a new line
         default:
           exec = false
         break;
@@ -231,7 +279,7 @@ export const intcode = async (program: string, initialInput?: number[], name: st
       ptr = nextPtr
     }
 
-    console.log(`${name} changing to state ${STATE}`)
+    log(ptr, `changing to state ${STATE}`)
   }
 
   load(program)

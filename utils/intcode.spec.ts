@@ -1,9 +1,13 @@
+import {asyncForEach} from '@arcath/utils'
+
 import {intcode, IDLE, WAIT_INPUT, WAIT_OUTPUT, HALTED} from './intcode'
+
+import {BOOST} from '../programs/boost'
 
 describe('INTCODE Computer', () => {
   it('should be promise based', async () => {
     const testInput = 10
-    const computer = await intcode("3,0,4,0,99")
+    const computer = await intcode({program: "3,0,4,0,99"})
 
     expect(computer.state()).toBe(IDLE)
 
@@ -24,6 +28,39 @@ describe('INTCODE Computer', () => {
     await computer.run()
 
     expect(computer.state()).toBe(HALTED)
+  })
+
+  it('should support opcode 9 and relative bases', async () => {
+    const program = `109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99`
+    const computer = await intcode({program, name: 'OPC9'})
+
+    expect(computer.state()).toBe(IDLE)
+
+    await asyncForEach(program.split(',').map((v) => parseInt(v)), async (location) => {
+      await computer.run()
+
+      expect(computer.state()).toBe(WAIT_OUTPUT)
+      expect(computer.output()).toBe(location)
+    })
+  })
+
+  it('should support 203 (BOOST OUTPUT)', async () => {
+    const program = `9,1,203,2,4,3,99`
+    const testInput = 86
+
+    const computer = await intcode({program, initialInput: [testInput], name: 'T203'})
+
+    await computer.run()
+
+    expect(computer.output()).toBe(testInput)
+  })
+
+  it('should run the boost program', async () => {
+    const computer = await intcode({program: BOOST, initialInput: [1], name: 'BOOST'})
+
+    await computer.run()
+
+    expect(computer.output()).toBe(2789104029)
   })
 })
 
