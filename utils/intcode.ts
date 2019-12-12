@@ -23,6 +23,9 @@ export interface IntCodeComputer{
   output: () => number
   input: (input: number) => void
   runUntilHalt: () => Promise<{output: number[]}>
+  sleep: (ms: number) => Promise<unknown>,
+  log: (ptr: number, message: string) => void,
+  ptr: number
 }
 
 export interface IntCodeOptions{
@@ -259,7 +262,7 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
           write(store, noun)
         break;
         case 4:
-          console.log(`${name}: OUTPUT ${noun}`)
+          log(ptr, `${name}: OUTPUT ${noun}`)
           out = noun
           exec = false
           STATE = WAIT_OUTPUT
@@ -315,6 +318,9 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
     output,
     write,
     input,
-    runUntilHalt
+    runUntilHalt,
+    sleep,
+    log,
+    ptr
   }
 }

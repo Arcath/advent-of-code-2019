@@ -1,5 +1,5 @@
 export class Point{
-  index: number
+  color: string
 
   constructor(public x: number, public y: number){}
 
