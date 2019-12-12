@@ -1,4 +1,6 @@
 export class Point{
+  index: number
+
   constructor(public x: number, public y: number){}
 
   distance(from: Point){
