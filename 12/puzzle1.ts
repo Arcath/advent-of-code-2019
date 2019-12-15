@@ -1,8 +1,12 @@
-class Moon{
+export class Moon{
   constructor(public x: number, public y: number, public z: number){}
+
+  equal(to: Moon | Velocity){
+    return (this.x === to.x && this.y === to.y && this.z === to.z)
+  }
 }
 
-class Velocity extends Moon{}
+export class Velocity extends Moon{}
 
 let time = 0
 const MOONS = [
