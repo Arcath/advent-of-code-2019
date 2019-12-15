@@ -25,7 +25,9 @@ export interface IntCodeComputer{
   runUntilHalt: () => Promise<{output: number[]}>
   sleep: (ms: number) => Promise<unknown>,
   log: (ptr: number, message: string) => void,
-  ptr: number
+  ptr: number,
+  inputs: number[]
+  setInputs: (inputs: number[]) => void
 }
 
 export interface IntCodeOptions{
@@ -33,17 +35,19 @@ export interface IntCodeOptions{
   initialInput: number[]
   name: string
   debug: boolean
+  log: boolean
 }
 
 const defaultOptions: IntCodeOptions = {
   program: '99',
   initialInput: [],
   name: 'INT',
-  debug: false
+  debug: false,
+  log: true
 }
 
 export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCodeComputer> => {
-  const {program, initialInput, name, debug} = Object.assign(defaultOptions, options)
+  const {program, initialInput, name, debug, log: _log} = Object.assign(defaultOptions, options)
 
   let PROGRAM: number[]
   const INPUTS: number[] = initialInput
@@ -57,9 +61,11 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
   }
 
   const log = (ptr: number, instruction: string) => {
-    process.stdout.clearLine(0)
-    process.stdout.cursorTo(0)
-    process.stdout.write(`${name}#${ptr}: ${instruction}`)
+    if(_log){
+      process.stdout.clearLine(0)
+      process.stdout.cursorTo(0)
+      process.stdout.write(`${name}#${ptr}: ${instruction}`)
+    }
   }
 
   const load = (input: string) => {
@@ -307,6 +313,16 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
     return {output: out}
   }
 
+  const setInputs = (inputs: number[]) => {
+    while(INPUTS.length > 0){
+      INPUTS.pop()
+    }
+
+    inputs.forEach((input) => {
+      INPUTS.push(input)
+    })
+  }
+
   load(program)
 
   return {
@@ -321,6 +337,8 @@ export const intcode = async (options: Partial<IntCodeOptions>): Promise<IntCode
     runUntilHalt,
     sleep,
     log,
-    ptr
+    ptr,
+    inputs: INPUTS,
+    setInputs
   }
 }
