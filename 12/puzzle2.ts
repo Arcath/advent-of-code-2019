@@ -90,13 +90,6 @@ const MOONS = [
   new Moon(11,11,-4, new Velocity(0,0,0))
 ]
 
-/*const MOONS = [
-  new Moon(-1,0,2, new Velocity(0,0,0)),
-  new Moon(2,-10,-7, new Velocity(0,0,0)),
-  new Moon(4,-8,8, new Velocity(0,0,0)),
-  new Moon(3,5,-1, new Velocity(0,0,0))
-]*/
-
 const calculateEnergy = () => {
   return MOONS.reduce((total, moon) => {
     return total + moon.energy()
